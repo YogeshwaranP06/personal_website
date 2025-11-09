@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Website - Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section id="recent-post">
+            <h2>Recent Post</h2>
+            <div id="recent-post-content">
+                <article>
+                    <h3>Welcome to My Personal Website</h3>
+                    <p>Posted on November 8, 2023</p>
+                    <p>This is my first post on this website. I'm excited to share my journey in web development and other projects. Stay tuned for more updates!</p>
+                </article>
+            </div>
+        </section>
+    </main>
+    <script>
+        function loadRecentPost() {
+            const recentPost = JSON.parse(localStorage.getItem('recentPost'));
+            const content = document.getElementById('recent-post-content');
+            if (recentPost) {
+                let html = `<article><h3>${recentPost.title}</h3><p>Posted on ${recentPost.date}</p><p>${recentPost.description}</p>`;
+                if (recentPost.attachments) {
+                    recentPost.attachments.forEach(attachment => {
+                        if (attachment.type === 'image') {
+                            html += `<img src="${attachment.data}" alt="${attachment.name}" style="max-width: 100%; height: auto;">`;
+                        } else {
+                            html += `<p><a href="${attachment.data}" download="${attachment.name}">Download ${attachment.name}</a></p>`;
+                        }
+                    });
+                }
+                html += `</article>`;
+                content.innerHTML = html;
+            }
+        }
+        loadRecentPost();
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Website - Connect</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section>
+            <h2>Connect With Me</h2>
+            <p>Find me on social media:</p>
+            <div class="social-icons" id="social-links">
+                <!-- Links will be loaded dynamically -->
+            </div>
+        </section>
+    </main>
+    </div>
+    <script>
+        function loadConnectLinks() {
+            const links = JSON.parse(localStorage.getItem('connectLinks')) || {};
+            const container = document.getElementById('social-links');
+            container.innerHTML = '';
+            if (links.twitter) {
+                container.innerHTML += `<a href="${links.twitter}" target="_blank"><img src="twitter-icon.svg" alt="Twitter" class="social-icon"></a>`;
+            }
+            if (links.linkedin) {
+                container.innerHTML += `<a href="${links.linkedin}" target="_blank"><img src="linkedin-icon.svg" alt="LinkedIn" class="social-icon"></a>`;
+            }
+            if (links.github) {
+                container.innerHTML += `<a href="${links.github}" target="_blank"><img src="github-icon.svg" alt="GitHub" class="social-icon"></a>`;
+            }
+            if (links.instagram) {
+                container.innerHTML += `<a href="${links.instagram}" target="_blank"><img src="instagram-icon.svg" alt="Instagram" class="social-icon"></a>`;
+            }
+            if (links.custom && links.custom.link) {
+                container.innerHTML += `<a href="${links.custom.link}" target="_blank"><img src="custom-icon.svg" alt="${links.custom.name}" class="social-icon"></a>`;
+            }
+        }
+        loadConnectLinks();
+    </script>
+</body>
+</html>

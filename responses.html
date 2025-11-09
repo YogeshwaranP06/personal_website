@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Responses</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main>
+        <section>
+            <h2>Contact Responses</h2>
+            <div id="responses-list"></div>
+        </section>
+    </main>
+    <script>
+        function loadResponses() {
+            const responses = JSON.parse(localStorage.getItem('contactResponses')) || [];
+            const list = document.getElementById('responses-list');
+            if (responses.length === 0) {
+                list.innerHTML = '<p>No responses yet.</p>';
+                return;
+            }
+            let html = '<table border="1"><tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th></tr>';
+            responses.forEach((response, index) => {
+                html += `<tr><td>${response.name}</td><td>${response.email}</td><td>${response.message}</td><td>${response.date}</td><td><button onclick="deleteResponse(${index})">Delete</button></td></tr>`;
+            });
+            html += '</table>';
+            list.innerHTML = html;
+        }
+        function deleteResponse(index) {
+            const responses = JSON.parse(localStorage.getItem('contactResponses')) || [];
+            responses.splice(index, 1);
+            localStorage.setItem('contactResponses', JSON.stringify(responses));
+            loadResponses();
+        }
+        loadResponses();
+    </script>
+</body>
+</html>

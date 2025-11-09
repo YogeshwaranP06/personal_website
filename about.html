@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Website - About</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section>
+            <h2>About Me</h2>
+            <div id="about-content-display">
+                <p>Hello! I'm a passionate developer and creator. This is my personal website where I share my thoughts, projects, and connect with others.</p>
+            </div>
+        </section>
+    </main>
+    </div>
+    <script>
+        function loadAboutContent() {
+            const content = localStorage.getItem('aboutContent');
+            const display = document.getElementById('about-content-display');
+            if (content) {
+                display.innerHTML = content;
+            }
+        }
+        loadAboutContent();
+    </script>
+</body>
+</html>

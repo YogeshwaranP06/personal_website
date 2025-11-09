@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posting Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section>
+            <h2>Add New Post</h2>
+            <form id="post-form">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required><br>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea><br>
+                <label for="attachments">Upload Photos/Documents (optional):</label>
+                <input type="file" id="attachments" name="attachments" multiple accept="image/*,.pdf,.doc,.docx,.txt"><br>
+                <div id="file-preview"></div><br>
+                <input type="submit" value="Add Post">
+            </form>
+            <div id="post-status" style="display: none;"></div>
+        </section>
+        <section>
+            <h2>All Posts</h2>
+            <div id="posts-list"></div>
+        </section>
+    </main>
+
+    </div>
+    <script>
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            const list = document.getElementById('posts-list');
+            if (posts.length === 0) {
+                list.innerHTML = '<p>No posts yet.</p>';
+                return;
+            }
+            let html = '';
+            posts.forEach((post, index) => {
+                html += `<article><h3>${post.title}</h3><p>Posted on ${post.date}</p><p>${post.description}</p><button onclick="deletePost(${index})">Delete</button></article>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function deletePost(index) {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            posts.splice(index, 1);
+            localStorage.setItem('blogPosts', JSON.stringify(posts));
+            loadPosts();
+            updateRecentPost();
+        }
+
+        function updateRecentPost() {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            if (posts.length > 0) {
+                const recent = posts[posts.length - 1];
+                localStorage.setItem('recentPost', JSON.stringify(recent));
+            } else {
+                localStorage.removeItem('recentPost');
+            }
+        }
+
+        document.getElementById('attachments').addEventListener('change', function(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('file-preview');
+            preview.innerHTML = '';
+            for (let file of files) {
+                const item = document.createElement('div');
+                item.textContent = file.name;
+                preview.appendChild(item);
+            }
+        });
+
+        document.getElementById('post-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const files = document.getElementById('attachments').files;
+            const date = new Date().toLocaleString();
+
+            const post = { title, description, date, attachments: [] };
+
+            if (files.length === 0) {
+                savePost(post);
+                return;
+            }
+
+            let loadedCount = 0;
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const attachment = {
+                        name: file.name,
+                        type: file.type.startsWith('image/') ? 'image' : 'document',
+                        data: e.target.result
+                    };
+                    post.attachments.push(attachment);
+                    loadedCount++;
+                    if (loadedCount === files.length) {
+                        savePost(post);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function savePost(post) {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            posts.push(post);
+            localStorage.setItem('blogPosts', JSON.stringify(posts));
+
+            updateRecentPost();
+
+            document.getElementById('post-form').reset();
+            document.getElementById('post-status').textContent = 'Post added successfully!';
+            document.getElementById('post-status').style.display = 'block';
+            document.getElementById('post-status').style.color = 'green';
+            loadPosts();
+        }
+
+        loadPosts();
+    </script>
+</body>
+</html>

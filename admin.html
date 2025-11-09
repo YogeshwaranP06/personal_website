@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section>
+            <h2>Admin Dashboard</h2>
+            <div class="admin-tabs">
+                <button onclick="showTab('posts')">Manage Posts</button>
+                <button onclick="showTab('projects')">Manage Projects</button>
+                <button onclick="showTab('about')">Edit About</button>
+                <button onclick="showTab('connect')">Edit Connect</button>
+                <button onclick="showTab('responses')">View Responses</button>
+            </div>
+            <div id="posts-tab" class="tab-content">
+                <h3>Add New Post</h3>
+                <form id="post-form">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required><br>
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required></textarea><br>
+                    <label for="attachments">Upload Photos/Documents (optional):</label>
+                    <input type="file" id="attachments" name="attachments" multiple accept="image/*,.pdf,.doc,.docx,.txt"><br>
+                    <div id="file-preview"></div><br>
+                    <input type="submit" value="Add Post">
+                </form>
+                <div id="post-status" style="display: none;"></div>
+                <h3>All Posts</h3>
+                <div id="posts-list"></div>
+            </div>
+            <div id="about-tab" class="tab-content" style="display: none;">
+                <h3>Edit About Content</h3>
+                <form id="about-form">
+                    <label for="about-content">About Content:</label>
+                    <textarea id="about-content" name="about-content" required></textarea><br>
+                    <input type="submit" value="Save About">
+                </form>
+                <div id="about-status" style="display: none;"></div>
+            </div>
+            <div id="connect-tab" class="tab-content" style="display: none;">
+                <h3>Edit Connect Links</h3>
+                <form id="connect-form">
+                    <label for="twitter-link">Twitter Link:</label>
+                    <input type="url" id="twitter-link" name="twitter-link" placeholder="https://twitter.com/yourusername"><br>
+                    <label for="linkedin-link">LinkedIn Link:</label>
+                    <input type="url" id="linkedin-link" name="linkedin-link" placeholder="https://linkedin.com/in/yourusername"><br>
+                    <label for="github-link">GitHub Link:</label>
+                    <input type="url" id="github-link" name="github-link" placeholder="https://github.com/yourusername"><br>
+                    <label for="instagram-link">Instagram Link:</label>
+                    <input type="url" id="instagram-link" name="instagram-link" placeholder="https://instagram.com/yourusername"><br>
+                    <label for="custom-name">Custom Social Media Name:</label>
+                    <input type="text" id="custom-name" name="custom-name" placeholder="e.g., Facebook"><br>
+                    <label for="custom-link">Custom Social Media Link:</label>
+                    <input type="url" id="custom-link" name="custom-link" placeholder="https://example.com/yourprofile"><br>
+                    <input type="submit" value="Save Connect Links">
+                </form>
+                <div id="connect-status" style="display: none;"></div>
+            </div>
+            <div id="projects-tab" class="tab-content" style="display: none;">
+                <h3>Add New Project</h3>
+                <form id="project-form">
+                    <label for="project-title">Title:</label>
+                    <input type="text" id="project-title" name="project-title" required><br>
+                    <label for="project-description">Description:</label>
+                    <textarea id="project-description" name="project-description" required></textarea><br>
+                    <label for="project-link">Project Link (optional):</label>
+                    <input type="url" id="project-link" name="project-link" placeholder="https://github.com/yourusername/project"><br>
+                    <label for="project-image">Upload Project Image (optional):</label>
+                    <input type="file" id="project-image" name="project-image" accept="image/*"><br>
+                    <div id="project-image-preview"></div><br>
+                    <input type="submit" value="Add Project">
+                </form>
+                <div id="project-status" style="display: none;"></div>
+                <h3>All Projects</h3>
+                <div id="projects-list"></div>
+            </div>
+            <div id="responses-tab" class="tab-content" style="display: none;">
+                <h3>Contact Responses</h3>
+                <table id="responses-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    </div>
+    <script>
+        function showTab(tabName) {
+            document.getElementById('posts-tab').style.display = 'none';
+            document.getElementById('projects-tab').style.display = 'none';
+            document.getElementById('about-tab').style.display = 'none';
+            document.getElementById('connect-tab').style.display = 'none';
+            document.getElementById('responses-tab').style.display = 'none';
+            document.getElementById(tabName + '-tab').style.display = 'block';
+        }
+
+        // Posts functionality
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            const list = document.getElementById('posts-list');
+            if (posts.length === 0) {
+                list.innerHTML = '<p>No posts yet.</p>';
+                return;
+            }
+            let html = '';
+            posts.forEach((post, index) => {
+                html += `<article><h4>${post.title}</h4><p>Posted on ${post.date}</p><p>${post.description}</p><button onclick="deletePost(${index})">Delete</button></article>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function deletePost(index) {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            posts.splice(index, 1);
+            localStorage.setItem('blogPosts', JSON.stringify(posts));
+            loadPosts();
+            updateRecentPost();
+        }
+
+        function updateRecentPost() {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            if (posts.length > 0) {
+                const recent = posts[posts.length - 1];
+                localStorage.setItem('recentPost', JSON.stringify(recent));
+            } else {
+                localStorage.removeItem('recentPost');
+            }
+        }
+
+        document.getElementById('attachments').addEventListener('change', function(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('file-preview');
+            preview.innerHTML = '';
+            for (let file of files) {
+                const item = document.createElement('div');
+                item.textContent = file.name;
+                preview.appendChild(item);
+            }
+        });
+
+        document.getElementById('post-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const files = document.getElementById('attachments').files;
+            const date = new Date().toLocaleString();
+
+            const post = { title, description, date, attachments: [] };
+
+            if (files.length === 0) {
+                savePost(post);
+                return;
+            }
+
+            let loadedCount = 0;
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const attachment = {
+                        name: file.name,
+                        type: file.type.startsWith('image/') ? 'image' : 'document',
+                        data: e.target.result
+                    };
+                    post.attachments.push(attachment);
+                    loadedCount++;
+                    if (loadedCount === files.length) {
+                        savePost(post);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function savePost(post) {
+            const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            posts.push(post);
+            localStorage.setItem('blogPosts', JSON.stringify(posts));
+
+            updateRecentPost();
+
+            document.getElementById('post-form').reset();
+            document.getElementById('post-status').textContent = 'Post added successfully!';
+            document.getElementById('post-status').style.display = 'block';
+            document.getElementById('post-status').style.color = 'green';
+            loadPosts();
+        }
+
+        // About functionality
+        document.getElementById('about-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const content = document.getElementById('about-content').value;
+            localStorage.setItem('aboutContent', content);
+            document.getElementById('about-status').textContent = 'About content saved successfully!';
+            document.getElementById('about-status').style.display = 'block';
+            document.getElementById('about-status').style.color = 'green';
+        });
+
+        // Load existing about content
+        const existingAbout = localStorage.getItem('aboutContent');
+        if (existingAbout) {
+            document.getElementById('about-content').value = existingAbout;
+        }
+
+        // Responses functionality
+        function loadResponses() {
+            const responses = JSON.parse(localStorage.getItem('contactResponses')) || [];
+            // Sort responses by date descending (newest first)
+            responses.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const tbody = document.querySelector('#responses-table tbody');
+            tbody.innerHTML = '';
+            responses.forEach((response, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${response.name}</td><td>${response.email}</td><td>${response.message}</td><td>${response.date}</td><td><button onclick="deleteResponse(${index})">Delete</button></td>`;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteResponse(index) {
+            const responses = JSON.parse(localStorage.getItem('contactResponses')) || [];
+            responses.splice(index, 1);
+            localStorage.setItem('contactResponses', JSON.stringify(responses));
+            loadResponses();
+        }
+
+        // Connect functionality
+        document.getElementById('connect-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const twitter = document.getElementById('twitter-link').value;
+            const linkedin = document.getElementById('linkedin-link').value;
+            const github = document.getElementById('github-link').value;
+            const instagram = document.getElementById('instagram-link').value;
+            const customName = document.getElementById('custom-name').value;
+            const customLink = document.getElementById('custom-link').value;
+            const connectLinks = { twitter, linkedin, github, instagram, custom: { name: customName, link: customLink } };
+            localStorage.setItem('connectLinks', JSON.stringify(connectLinks));
+            document.getElementById('connect-status').textContent = 'Connect links saved successfully!';
+            document.getElementById('connect-status').style.display = 'block';
+            document.getElementById('connect-status').style.color = 'green';
+        });
+
+        // Load existing connect links
+        const existingConnect = JSON.parse(localStorage.getItem('connectLinks'));
+        if (existingConnect) {
+            document.getElementById('twitter-link').value = existingConnect.twitter || '';
+            document.getElementById('linkedin-link').value = existingConnect.linkedin || '';
+            document.getElementById('github-link').value = existingConnect.github || '';
+            document.getElementById('instagram-link').value = existingConnect.instagram || '';
+            document.getElementById('custom-name').value = existingConnect.custom?.name || '';
+            document.getElementById('custom-link').value = existingConnect.custom?.link || '';
+        }
+
+        // Projects functionality
+        function loadProjects() {
+            const projects = JSON.parse(localStorage.getItem('projects')) || [];
+            const list = document.getElementById('projects-list');
+            if (projects.length === 0) {
+                list.innerHTML = '<p>No projects yet.</p>';
+                return;
+            }
+            let html = '';
+            projects.forEach((project, index) => {
+                html += `<article><h4>${project.title}</h4><p>${project.description}</p>${project.link ? `<a href="${project.link}" target="_blank">View Project</a>` : ''}${project.image ? `<img src="${project.image}" alt="${project.title}" style="max-width: 200px;">` : ''}<button onclick="deleteProject(${index})">Delete</button></article>`;
+            });
+            list.innerHTML = html;
+        }
+
+        function deleteProject(index) {
+            const projects = JSON.parse(localStorage.getItem('projects')) || [];
+            projects.splice(index, 1);
+            localStorage.setItem('projects', JSON.stringify(projects));
+            loadProjects();
+        }
+
+        document.getElementById('project-image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('project-image-preview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px;">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        document.getElementById('project-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('project-title').value;
+            const description = document.getElementById('project-description').value;
+            const link = document.getElementById('project-link').value;
+            const file = document.getElementById('project-image').files[0];
+
+            const project = { title, description, link };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    project.image = e.target.result;
+                    saveProject(project);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveProject(project);
+            }
+        });
+
+        function saveProject(project) {
+            const projects = JSON.parse(localStorage.getItem('projects')) || [];
+            projects.push(project);
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            document.getElementById('project-form').reset();
+            document.getElementById('project-image-preview').innerHTML = '';
+            document.getElementById('project-status').textContent = 'Project added successfully!';
+            document.getElementById('project-status').style.display = 'block';
+            document.getElementById('project-status').style.color = 'green';
+            loadProjects();
+        }
+
+        loadPosts();
+        loadProjects();
+        loadResponses();
+    </script>
+</body>
+</html>

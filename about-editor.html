@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Editor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section>
+            <h2>Edit About Content</h2>
+            <form id="about-form">
+                <label for="about-content">About Content:</label>
+                <textarea id="about-content" name="about-content" required></textarea><br>
+                <input type="submit" value="Save About">
+            </form>
+            <div id="about-status" style="display: none;"></div>
+        </section>
+    </main>
+
+    </div>
+    <script>
+        document.getElementById('about-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const content = document.getElementById('about-content').value;
+            localStorage.setItem('aboutContent', content);
+            document.getElementById('about-status').textContent = 'About content saved successfully!';
+            document.getElementById('about-status').style.display = 'block';
+            document.getElementById('about-status').style.color = 'green';
+        });
+
+        // Load existing content
+        const existingContent = localStorage.getItem('aboutContent');
+        if (existingContent) {
+            document.getElementById('about-content').value = existingContent;
+        }
+    </script>
+</body>
+</html>

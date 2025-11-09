@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Website - Contact</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="sidebar">
+            <div class="logo">
+                <img src="profile-logo.svg" alt="Profile Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="connect.html">Connect</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        <section>
+            <h2>Contact Me</h2>
+            <p>Get in touch:</p>
+            <form id="contact-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea><br>
+                <input type="submit" value="Send">
+            </form>
+            <div id="status-message" style="display: none;"></div>
+        </section>
+    </main>
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.style.display = 'block';
+            statusMessage.textContent = 'Sending...';
+            statusMessage.style.color = 'blue';
+
+            const templateParams = {
+                from_name: document.getElementById('name').value,
+                from_email: document.getElementById('email').value,
+                message: document.getElementById('message').value,
+                to_email: 'paecesgaming@gmail.com'
+            };
+
+            // Save response locally first
+            const responses = JSON.parse(localStorage.getItem('contactResponses')) || [];
+            responses.push({
+                name: templateParams.from_name,
+                email: templateParams.from_email,
+                message: templateParams.message,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('contactResponses', JSON.stringify(responses));
+            alert('Response saved locally. Check admin page for responses.');
+
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams) // Replace with your EmailJS service and template IDs
+                .then(function(response) {
+                    statusMessage.textContent = 'Message sent successfully!';
+                    statusMessage.style.color = 'green';
+                    document.getElementById('contact-form').reset();
+                }, function(error) {
+                    statusMessage.textContent = 'Failed to send message. Please try again.';
+                    statusMessage.style.color = 'red';
+                    console.error('EmailJS error:', error);
+                });
+        });
+    </script>
+    </div>
+</body>
+</html>
